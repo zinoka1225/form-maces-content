@@ -432,12 +432,22 @@
       if (attempt === 0 && isManifestoTurn && MANIFESTOS.length > 0) {
         return MANIFESTOS[clickCount === 1 ? 0 : seed % MANIFESTOS.length];
       }
-      const s = seed + attempt * 7919;
+      const s = (seed + attempt * 7919) >>> 0;
       return [
-        P1[s % P1.length],
-        P2[(s * 7 + clickCount * 13) % P2.length],
-        P3[(s * 19 + clickCount * 29) % P3.length]
+        P1[mixHash(s, 1) % P1.length],
+        P2[mixHash(s, 2) % P2.length],
+        P3[mixHash(s, 3) % P3.length]
       ];
+    }
+
+    // Scrambles the seed separately for each word slot, so every word in every pool
+    // can appear and the three slots don't move in lockstep.
+    function mixHash(seed, slot) {
+      let h = Math.imul(seed ^ Math.imul(slot, 0x9e3779b1), 0x85ebca6b);
+      h ^= h >>> 13;
+      h = Math.imul(h, 0xc2b2ae35);
+      h ^= h >>> 16;
+      return h >>> 0;
     }
 
     // Render large [1] Word  [2] Word  [3] Word at the top
