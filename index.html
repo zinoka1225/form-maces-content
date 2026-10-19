@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form maces content.</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #000000;
+      --lorem-muted: #d2d2d2;
+      --hairline: 1px solid var(--ink);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .page-frame {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      padding: 32px 36px 28px 36px;
+      gap: 28px;
+    }
+
+    /* Top Area: Bold 3-Word Assembly + Minimal FORM / CLICK Meta */
+    .top-stage {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .assembled-sentence {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      column-gap: clamp(22px, 3.2vw, 52px);
+      row-gap: 10px;
+      line-height: 1;
+    }
+
+    .assembled-word {
+      display: inline-flex;
+      align-items: flex-start;
+      font-size: clamp(34px, 4.8vw, 76px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+    }
+
+    .word-index-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: var(--hairline);
+      font-size: clamp(11px, 1.05vw, 15px);
+      font-weight: 500;
+      line-height: 1;
+      padding: 3px 5px;
+      margin-right: clamp(6px, 0.7vw, 12px);
+      transform: translateY(2px);
+    }
+
+    .meta-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      padding-top: 4px;
+    }
+
+    /* Dense Full-Screen Lorem Ipsum Wall */
+    .wall-container {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .lorem-wall {
+      font-style: italic;
+      font-size: clamp(14px, 1.35vw, 18.5px);
+      line-height: 1.54;
+      letter-spacing: 0.01em;
+      text-align: justify;
+      word-break: break-all;
+      color: var(--lorem-muted);
+    }
+
+    /* Highlighted Black Block with White Italic Letter */
+    .is-active {
+      position: relative;
+      display: inline-block;
+      background: var(--ink);
+      color: var(--bg);
+      font-weight: 500;
+      padding: 1px 4px 2px 4px;
+      margin: 0 17px 0 1px;
+      line-height: 1.15;
+    }
+
+    /*
+     * 3-Sided Thin Square Footnote Tag:
+     * Left side touches the black block directly,
+     * Top, Right, and Bottom sides have a hairline.
+     */
+    .fn-box {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      background: var(--bg);
+      color: var(--ink);
+      border: var(--hairline);
+      border-left: none;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 8.5px;
+      line-height: 1;
+      padding: 2px 3px;
+      letter-spacing: -0.02em;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* Intro: thin-bordered box shown once, first click enters */
+    .intro {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .intro-box {
+      max-width: 34em;
+      background: var(--bg);
+      border: var(--hairline);
+      padding: 28px 30px 22px;
+      font-size: 15px;
+      line-height: 1.75;
+      word-break: keep-all;
+    }
+
+    .intro-box p + p {
+      margin-top: 0.9em;
+    }
+
+    .intro-enter {
+      margin-top: 22px;
+      text-align: right;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+    <!-- Bold Top Display: [1] Word  [2] Word  [3] Word + FORM & CLICK Meta -->
+    <header class="top-stage">
+      <div class="assembled-sentence" id="assembledSentence"></div>
+      <div class="meta-info">
+        <div id="formMeta">FORM 0×0</div>
+        <div id="clickMeta">CLICK 00</div>
+      </div>
+    </header>
+
+    <!-- Dense Lorem Ipsum Wall -->
+    <main class="wall-container" id="wallContainer">
+      <div class="lorem-wall" id="loremWall" aria-hidden="true"></div>
+    </main>
+  </div>
+
+  <!-- Intro Box -->
+  <div class="intro" id="intro">
+    <div class="intro-box" lang="ko">
+      <p>내용을 정리하기 위해서, 돋보이게 하기 위해서, 숨기기 위해서 우리는 형식을 사용합니다. 하지만 때로는 형식 그 자체가 우리에게 말을 걸어오기도 합니다.</p>
+      <p>이 웹은 화면 크기에 따라 화면을 채우는 텍스트의 양이 달라집니다. 그 텍스트 풀 안에서 조합된 단어로 단문을 구성합니다.</p>
+      <p>더미 텍스트(Lorem ipsum)를 형식으로 삼아 내용을 추출하는 웹. 내용을 뺀 형식을 내용으로 삼는 웹입니다.</p>
+      <div class="intro-enter">CLICK TO ENTER</div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_LOREM =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. " +
+      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. " +
+      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. " +
+      "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, " +
+      "eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. " +
+      "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos " +
+      "qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, " +
+      "adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. " +
+      "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? " +
+      "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem " +
+      "eum fugiat quo voluptas nulla pariatur. At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium " +
+      "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, " +
+      "similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. ";
+
+    // 3-Word Pools: [1] Modifier/State + [2] Form/Medium Noun + [3] Action/Verb
+    const POOL_1 = [
+      "SOMETIMES", "SILENT", "EMPTY", "RIGID", "HIDDEN", "RANDOM",
+      "FIXED", "QUIET", "STRICT", "BLIND", "DENSE", "OUTER",
+      "PURE", "RAW", "COLD", "MUTE", "PAPER", "STATIC",
+      "OPEN", "NARROW", "SHARP", "LATENT", "SPARE", "ODD"
+    ];
+
+    const POOL_2 = [
+      "FORM", "GRIDS", "SPACE", "MARGINS", "ORDER", "LIMITS",
+      "FRAMES", "LETTERS", "COLUMNS", "RULES", "BORDERS", "NOISE",
+      "MODES", "LINES", "BLOCKS", "TEXT", "RATIO", "VOLUME",
+      "RHYTHM", "MEASURE", "MATTER", "INDEX", "SYNTAX", "GAPS"
+    ];
+
+    const POOL_3 = [
+      "MAKES.", "CREATES.", "DEFINES.", "SHAPES.", "SPEAKS.", "HOLDS.",
+      "EXTRACTS.", "BUILDS.", "WRITES.", "REVEALS.", "FINDS.", "GUIDES.",
+      "LEAVES.", "ALTERS.", "READS.", "INVENTS.", "DRAWS.", "SELECTS.",
+      "MOVES.", "FRAMES.", "DIVIDES.", "BINDS.", "REMAINS.", "TURNS."
+    ];
+
+    const MANIFESTO_TRIPLETS = [
+      ["FORM", "MAKES", "CONTENT."],
+      ["SOMETIMES", "FORM", "CREATES."]
+    ];
+
+    // Lorem ipsum has no K, W or Y. Words are respelled the way Latin writes them
+    // (K→C, W→V, Y→I), so MAKES becomes MACES: the dummy text's alphabet reshapes the word.
+    const LATIN_SUBSTITUTES = { K: "C", W: "V", Y: "I" };
+    const latinize = (word) => word.replace(/[KWY]/g, (c) => LATIN_SUBSTITUTES[c]);
+
+    // Safety net: only words whose every letter exists in the source text can appear.
+    const AVAILABLE_CHARS = new Set(BASE_LOREM.toLowerCase().replace(/\s+/g, ""));
+    const isSpellable = (word) => [...word.toLowerCase()].every((c) => AVAILABLE_CHARS.has(c));
+    const preparePool = (pool) => pool.map(latinize).filter(isSpellable);
+
+    const P1 = preparePool(POOL_1);
+    const P2 = preparePool(POOL_2);
+    const P3 = preparePool(POOL_3);
+    const MANIFESTOS = MANIFESTO_TRIPLETS
+      .map((t) => t.map(latinize))
+      .filter((t) => t.every(isSpellable));
+
+    const shortest = (pool) => pool.reduce((a, b) => (b.length < a.length ? b : a));
+    const SHORTEST_TRIPLE = [shortest(P1), shortest(P2), shortest(P3)];
+
+    let fallbackTriples = null;
+    function getFallbackTriples() {
+      if (!fallbackTriples) {
+        fallbackTriples = [];
+        for (const a of P1) for (const b of P2) for (const c of P3) fallbackTriples.push([a, b, c]);
+        fallbackTriples.sort((x, y) => x.join("").length - y.join("").length);
+      }
+      return fallbackTriples;
+    }
+
+    const MIN_GAP = 6;        // minimum characters between two highlighted letters
+    const MAX_ATTEMPTS = 12;  // word re-rolls if a triple can't fit on screen
+    const MAX_FIT_PASSES = 6; // re-placements if highlights push letters out of view
+
+    const wallContainerEl = document.getElementById("wallContainer");
+    const wallEl = document.getElementById("loremWall");
+    const assembledSentenceEl = document.getElementById("assembledSentence");
+    const formMetaEl = document.getElementById("formMeta");
+    const clickMetaEl = document.getElementById("clickMeta");
+
+    let charSpans = [];
+    let charKeys = [];
+    let activeSpans = [];
+    let clickCount = 1;
+
+    function computeFormSeed(w, h, clicks) {
+      const seed = (w * 73856093) ^ (h * 19349663) ^ (clicks * 83492791);
+      return Math.abs(seed);
+    }
+
+    function appendLorem(text) {
+      const frag = document.createDocumentFragment();
+      for (const ch of text) {
+        if (ch === " ") {
+          frag.appendChild(document.createTextNode(" "));
+          continue;
+        }
+        const span = document.createElement("span");
+        span.textContent = ch;
+        frag.appendChild(span);
+        charSpans.push(span);
+        charKeys.push(ch.toLowerCase());
+      }
+      wallEl.appendChild(frag);
+    }
+
+    // Fill until the text overflows the visible area, with spare lines below
+    // so the wall stays full when highlights push text down.
+    function buildLoremWall() {
+      wallEl.textContent = "";
+      charSpans = [];
+      charKeys = [];
+      activeSpans = [];
+      const targetHeight = wallContainerEl.clientHeight * 1.3 + 200;
+      for (let i = 0; i < 20 && wallEl.offsetHeight < targetHeight; i++) {
+        appendLorem(BASE_LOREM);
+      }
+    }
+
+    // Index of the last character whose box is fully inside the visible wall.
+    // Text flows in order, so a binary search over the spans is enough.
+    function lastVisibleIndex() {
+      const bottom = wallContainerEl.getBoundingClientRect().bottom + 0.5;
+      let lo = 0;
+      let hi = charSpans.length - 1;
+      let found = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (charSpans[mid].getBoundingClientRect().bottom <= bottom) {
+          found = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      return found;
+    }
+
+    function clearHighlights() {
+      activeSpans.forEach((span) => {
+        span.classList.remove("is-active");
+        span.lastChild.remove();
+      });
+      activeSpans = [];
+    }
+
+    function applyHighlights(indices) {
+      indices.forEach((charIdx, i) => {
+        const span = charSpans[charIdx];
+        span.classList.add("is-active");
+        const fnBox = document.createElement("span");
+        fnBox.className = "fn-box";
+        fnBox.textContent = String(i + 1);
+        span.appendChild(fnBox);
+        activeSpans.push(span);
+      });
+    }
+
+    // Pick one character per target letter, in order, within [0, limit].
+    // Returns null only if the letters truly can't fit in that range.
+    function planPositions(targets, seed, limit) {
+      const n = targets.length;
+      if (limit < 0 || n === 0) return null;
+
+      // Backward pass: the latest index each letter may take so the rest still fit.
+      const latest = new Array(n);
+      let bound = limit;
+      for (let i = n - 1; i >= 0; i--) {
+        let j = bound;
+        while (j >= 0 && charKeys[j] !== targets[i]) j--;
+        if (j < 0) return null;
+        latest[i] = j;
+        bound = j - MIN_GAP;
+      }
+
+      // Forward pass: aim for an even spread with seeded jitter, never past `latest`.
+      const segment = (limit + 1) / n;
+      const jitterRange = Math.max(1, Math.floor(segment * 0.6));
+      const picks = [];
+      let prev = -MIN_GAP;
+
+      for (let i = 0; i < n; i++) {
+        const mix = Math.imul((seed ^ Math.imul(i + 1, 0x9e3779b1)) >>> 0, 0x85ebca6b) >>> 0;
+        const ideal = Math.floor(i * segment) + (mix % jitterRange);
+        const lower = prev + MIN_GAP;
+        let start = Math.max(lower, ideal);
+        if (start > latest[i]) start = lower;
+
+        let j = start;
+        while (charKeys[j] !== targets[i]) j++; // always stops by latest[i]
+        picks.push(j);
+        prev = j;
+      }
+      return picks;
+    }
+
+    // Place the letters, then verify every highlight is actually on screen.
+    // Highlights widen their letters and push text down, so re-place if needed.
+    function extract(words, seed) {
+      clearHighlights();
+      const targets = words.join("").toLowerCase().split("");
+      let limit = lastVisibleIndex();
+
+      for (let pass = 0; pass < MAX_FIT_PASSES; pass++) {
+        const picks = planPositions(targets, seed, limit);
+        if (!picks) return false;
+
+        applyHighlights(picks);
+        const bottom = wallContainerEl.getBoundingClientRect().bottom + 0.5;
+        if (activeSpans.every((s) => s.getBoundingClientRect().bottom <= bottom)) {
+          return true;
+        }
+
+        const shiftedLimit = lastVisibleIndex();
+        clearHighlights();
+        limit = Math.min(shiftedLimit, limit - 20);
+      }
+      return false;
+    }
+
+    function pickWords(seed, attempt) {
+      const isManifestoTurn = clickCount === 1 || clickCount % 6 === 0;
+      if (attempt === 0 && isManifestoTurn && MANIFESTOS.length > 0) {
+        return MANIFESTOS[clickCount === 1 ? 0 : seed % MANIFESTOS.length];
+      }
+      const s = seed + attempt * 7919;
+      return [
+        P1[s % P1.length],
+        P2[(s * 7 + clickCount * 13) % P2.length],
+        P3[(s * 19 + clickCount * 29) % P3.length]
+      ];
+    }
+
+    // Render large [1] Word  [2] Word  [3] Word at the top
+    function renderSentence(words) {
+      assembledSentenceEl.innerHTML = words
+        .map((w, i) => `<span class="assembled-word"><span class="word-index-box">${i + 1}</span>${w}</span>`)
+        .join("");
+    }
+
+    function triggerNextExtraction() {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const seed = computeFormSeed(vw, vh, clickCount);
+
+      formMetaEl.textContent = `FORM ${vw}×${vh}`;
+      clickMetaEl.textContent = `CLICK ${String(clickCount).padStart(2, "0")}`;
+
+      // The header is rendered first: its height decides how much wall is visible.
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        const words = pickWords(seed, attempt);
+        renderSentence(words);
+        if (extract(words, (seed + attempt * 7919) >>> 0)) return;
+      }
+
+      // Very small screens: search every combination, shortest first, for one the
+      // visible text can spell. If none fits, show nothing rather than a sentence
+      // the wall doesn't contain.
+      renderSentence(SHORTEST_TRIPLE);
+      const limit = lastVisibleIndex();
+      let verified = 0;
+      for (const words of getFallbackTriples()) {
+        if (!planPositions(words.join("").toLowerCase().split(""), seed, limit)) continue;
+        renderSentence(words);
+        if (extract(words, seed)) return;
+        if (++verified >= 10) break;
+      }
+      assembledSentenceEl.innerHTML = "";
+    }
+
+    const introEl = document.getElementById("intro");
+    let entered = false;
+
+    // Before entering: the real form size is shown, no click counted yet.
+    function showIntroMeta() {
+      formMetaEl.textContent = `FORM ${window.innerWidth}×${window.innerHeight}`;
+      clickMetaEl.textContent = "CLICK 00";
+    }
+
+    // The first click only closes the intro and runs the first extraction (CLICK 01).
+    document.body.addEventListener("click", () => {
+      if (!entered) {
+        entered = true;
+        introEl.remove();
+        triggerNextExtraction();
+        return;
+      }
+      clickCount++;
+      triggerNextExtraction();
+    });
+
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        buildLoremWall();
+        if (!entered) return showIntroMeta();
+        clickCount++;
+        triggerNextExtraction();
+      }, 120);
+    });
+
+    buildLoremWall();
+    showIntroMeta();
+  </script>
+</body>
+</html>
