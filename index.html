@@ -10,6 +10,8 @@
       --ink: #000000;
       --lorem-muted: #d2d2d2;
       --hairline: 1px solid var(--ink);
+      --text-size: clamp(14px, 1.35vw, 18.5px); /* one size for title, meta and wall */
+      --line: 1.54;
     }
 
     * {
@@ -37,59 +39,48 @@
       height: 100vh;
       height: 100dvh;
       padding: 32px 36px 28px 36px;
-      gap: 28px;
+      gap: clamp(48px, 11vh, 140px); /* the title is set apart by space, not size */
     }
 
-    /* Top Area: Bold 3-Word Assembly + Minimal FORM / CLICK Meta */
+    /* Top Area: 3-Word Assembly + FORM / CLICK Meta, same size as the wall */
     .top-stage {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 24px;
+      gap: 3em;
+      font-size: var(--text-size);
+      font-weight: 400;
+      line-height: var(--line);
+      letter-spacing: 0.01em;
     }
 
     .assembled-sentence {
       display: flex;
       flex-wrap: wrap;
-      align-items: baseline;
-      column-gap: clamp(22px, 3.2vw, 52px);
-      row-gap: 10px;
-      line-height: 1;
+      column-gap: 3em;
     }
 
     .assembled-word {
       display: inline-flex;
       align-items: flex-start;
-      font-size: clamp(34px, 4.8vw, 76px);
-      font-weight: 500;
-      letter-spacing: -0.03em;
-      line-height: 0.95;
+      white-space: nowrap;
     }
 
+    /* Same footnote box as in the wall */
     .word-index-box {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       border: var(--hairline);
-      font-size: clamp(11px, 1.05vw, 15px);
+      font-size: 8.5px;
       font-weight: 500;
       line-height: 1;
-      padding: 3px 5px;
-      margin-right: clamp(6px, 0.7vw, 12px);
-      transform: translateY(2px);
+      padding: 2px 3px;
+      letter-spacing: -0.02em;
+      margin: 0.25em 0.5em 0 0;
     }
 
     .meta-info {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
+      text-align: right;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
-      padding-top: 4px;
     }
 
     /* Dense Full-Screen Lorem Ipsum Wall */
@@ -100,8 +91,8 @@
 
     .lorem-wall {
       font-style: italic;
-      font-size: clamp(14px, 1.35vw, 18.5px);
-      line-height: 1.54;
+      font-size: var(--text-size);
+      line-height: var(--line);
       letter-spacing: 0.01em;
       text-align: justify;
       word-break: break-all;
