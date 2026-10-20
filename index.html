@@ -74,7 +74,7 @@
       line-height: 1;
       padding: 2px 3px;
       letter-spacing: -0.02em;
-      margin: 0.25em 0.5em 0 0;
+      margin-right: 0.5em; /* margin-top is set in JS (alignIndexBoxes) */
     }
 
     .meta-info {
@@ -444,8 +444,32 @@
     // Render large [1] Word  [2] Word  [3] Word at the top
     function renderSentence(words) {
       assembledSentenceEl.innerHTML = words
-        .map((w, i) => `<span class="assembled-word"><span class="word-index-box">${i + 1}</span>${w}</span>`)
+        .map((w, i) => `<span class="assembled-word"><span class="word-index-box">${i + 1}</span><span class="word-text">${w}</span></span>`)
         .join("");
+      alignIndexBoxes();
+    }
+
+    // Optical alignment: the number box is centred on the capital height of the word
+    // instead of poking above it, so the sentence sits on the same row as FORM / CLICK.
+    // Measured with whatever font the OS actually uses.
+    const measureCtx = document.createElement("canvas").getContext("2d");
+    function alignIndexBoxes() {
+      assembledSentenceEl.querySelectorAll(".assembled-word").forEach((word) => {
+        const text = word.lastElementChild;
+        const cs = getComputedStyle(text);
+        measureCtx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+        const capHeight = measureCtx.measureText("H").actualBoundingBoxAscent;
+
+        const probe = document.createElement("span");
+        probe.style.cssText = "display:inline-block;width:0;height:0;vertical-align:baseline";
+        text.appendChild(probe);
+        const baseline = probe.getBoundingClientRect().top;
+        probe.remove();
+
+        const box = word.firstElementChild;
+        const boxTop = baseline - capHeight / 2 - box.offsetHeight / 2;
+        box.style.marginTop = `${boxTop - word.getBoundingClientRect().top}px`;
+      });
     }
 
     function triggerNextExtraction() {
